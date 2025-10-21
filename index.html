@@ -424,232 +424,214 @@
   </footer>
 
   <script>
-    // ------ Simple SPA routing (#home, #lab, #news); #contact scrolls within #home
-    function route() {
-      const raw = location.hash || '#home';
-      const hash = raw === '#contact' ? '#home' : raw;
-      const showHome = hash === '#home' || hash === '';
-      document.getElementById('route-home').style.display = showHome ? 'block' : 'none';
-      document.getElementById('route-lab').style.display = hash === '#lab' ? 'block' : 'none';
-      document.getElementById('route-news').style.display = hash === '#news' ? 'block' : 'none';
-      if (raw === '#contact') {
-        setTimeout(() => document.getElementById('contact')?.scrollIntoView({behavior:'smooth'}), 0);
-      }
-    }
-    window.addEventListener('hashchange', route);
-    route();
+(() => {
+  // ------ Simple SPA routing (#home, #lab, #news); #contact scrolls within #home
+  function route() {
+    const raw = location.hash || '#home';
+    const hash = raw === '#contact' ? '#home' : raw;
+    const showHome = hash === '#home' || hash === '';
+    document.getElementById('route-home').style.display = showHome ? 'block' : 'none';
+    document.getElementById('route-lab').style.display = hash === '#lab' ? 'block' : 'none';
+    document.getElementById('route-news').style.display = hash === '#news' ? 'block' : 'none';
+    if (raw === '#contact') setTimeout(() => document.getElementById('contact')?.scrollIntoView({behavior:'smooth'}), 0);
+  }
+  window.addEventListener('hashchange', route);
+  route();
 
-    // Professor modal controls
-    const modal = document.getElementById('professor-modal');
-    document.addEventListener('click', (e) => {
-      if (e.target && (e.target.id === 'open-modal-btn')) {
-        modal.classList.remove('hidden');
-      }
-      if (e.target && (e.target.id === 'close-modal-btn' || e.target === modal)) {
-        modal.classList.add('hidden');
-      }
-    });
+  // Professor modal controls
+  const modal = document.getElementById('professor-modal');
+  document.addEventListener('click', (e) => {
+    const t = e.target;
+    if (!t) return;
+    if (t.id === 'open-modal-btn') modal.classList.remove('hidden');
+    if (t.id === 'close-modal-btn' || t === modal) modal.classList.add('hidden');
+  });
 
-    // Footer year
-    document.getElementById('y').textContent = new Date().getFullYear();
+  // Footer year
+  document.getElementById('y').textContent = new Date().getFullYear();
 
-    // Settings modal
-    const openSettings = document.getElementById('open-settings');
-    const settingsModal = document.getElementById('settings-modal');
-    const closeSettings = document.getElementById('close-settings');
-    openSettings?.addEventListener('click', () => loadSettings(true));
-    closeSettings?.addEventListener('click', () => settingsModal.classList.add('hidden'));
+  // Settings modal
+  const openSettings = document.getElementById('open-settings');
+  const settingsModal = document.getElementById('settings-modal');
+  const closeSettings = document.getElementById('close-settings');
+  openSettings?.addEventListener('click', () => loadSettings(true));
+  closeSettings?.addEventListener('click', () => settingsModal.classList.add('hidden'));
 
-    function loadSettings(open) {
-      const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
-      document.getElementById('api-key').value = '';
-      document.getElementById('scholar-id').value = cfg.scholar || '';
-      document.getElementById('orcid-id').value = cfg.orcid || '';
-      document.getElementById('nstc-pi').value = cfg.nstc_pi || '';
-      document.getElementById('photo-prof').value = cfg.photo_prof || '';
-      document.getElementById('photo-m2-he').value = cfg.photo_m2_he || '';
-      document.getElementById('photo-m2-chen').value = cfg.photo_m2_chen || '';
-      document.getElementById('photo-m2-tu').value = cfg.photo_m2_tu || '';
-      document.getElementById('photo-m1-shih').value = cfg.photo_m1_shih || '';
-      if (open) settingsModal.classList.remove('hidden');
-    }
+  function loadSettings(open) {
+    const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
+    document.getElementById('api-key').value = '';
+    document.getElementById('scholar-id').value = cfg.scholar || '';
+    document.getElementById('orcid-id').value = cfg.orcid || '';
+    document.getElementById('nstc-pi').value = cfg.nstc_pi || '';
+    document.getElementById('photo-prof').value = cfg.photo_prof || '';
+    document.getElementById('photo-m2-he').value = cfg.photo_m2_he || '';
+    document.getElementById('photo-m2-chen').value = cfg.photo_m2_chen || '';
+    document.getElementById('photo-m2-tu').value = cfg.photo_m2_tu || '';
+    document.getElementById('photo-m1-shih').value = cfg.photo_m1_shih || '';
+    if (open) settingsModal.classList.remove('hidden');
+  }
 
-    document.getElementById('save-settings')?.addEventListener('click', () => {
-      const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
-      cfg.api = document.getElementById('api-key').value || cfg.api || '';
-      cfg.scholar = document.getElementById('scholar-id').value.trim();
-      cfg.orcid = document.getElementById('orcid-id').value.trim();
-      cfg.nstc_pi = document.getElementById('nstc-pi').value.trim();
-      cfg.photo_prof = document.getElementById('photo-prof').value.trim();
-      cfg.photo_m2_he = document.getElementById('photo-m2-he').value.trim();
-      cfg.photo_m2_chen = document.getElementById('photo-m2-chen').value.trim();
-      cfg.photo_m2_tu = document.getElementById('photo-m2-tu').value.trim();
-      cfg.photo_m1_shih = document.getElementById('photo-m1-shih').value.trim();
-      localStorage.setItem('nric_cfg', JSON.stringify(cfg));
-      settingsModal.classList.add('hidden');
-      applyPhotos();
-
-    // Inline testers for photo URLs
-    document.querySelectorAll('.test-link').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const forId = btn.getAttribute('data-test-for');
-        const input = document.getElementById(forId);
-        const preview = document.getElementById('preview-' + forId);
-        const url = normalizeURL(input.value);
-        if (!input.value) { preview.innerHTML = '請先貼上 URL'; return; }
-        // Create a transient image to test
-        const testImg = new Image();
-        preview.innerHTML = '測試中…';
-        testImg.onload = () => { preview.innerHTML = '✅ 可讀取（儲存後會套用到頁面）'; };
-        testImg.onerror = () => { preview.innerHTML = '❌ 讀取失敗：可能為私有連結、需要登入、或被禁止熱鏈。試試 Google Drive 直連／Dropbox raw／GitHub raw。'; };
-        testImg.src = url;
-      });
-    });
-      fetchPublications();
-      fetchNSTC();
-    });
-
-    document.getElementById('clear-settings')?.addEventListener('click', () => {
-      localStorage.removeItem('nric_cfg');
-      applyPhotos();
-    });
-
-    function normalizeURL(u) {
-      if (!u) return '';
-      let url = u.trim();
-      // Force https when possible
-      if (url.startsWith('http://')) url = url.replace('http://', 'https://');
-      // Google Drive: https://drive.google.com/file/d/FILEID/view?usp=sharing -> uc?export=view&id=FILEID
-      const g = url.match(/https?:\/\/drive\.google\.com\/file\/d\/([^/]+)/);
-      if (g) return `https://drive.google.com/uc?export=view&id=${g[1]}`;
-      // Dropbox: ?dl=0 -> ?raw=1
-      if (url.includes('dropbox.com') && url.includes('?dl=0')) url = url.replace('?dl=0','?raw=1');
-      // GitHub blob -> raw
-      if (url.includes('github.com') && url.includes('/blob/')) url = url.replace('github.com','raw.githubusercontent.com').replace('/blob/','/');
-      return url;
-    }
-
-    function setImgSrc(id, url, placeholder, previewId) {
-      const img = document.getElementById(id);
-      const normalized = normalizeURL(url);
-      if (!img) return;
-      img.onerror = () => {
-        img.src = placeholder;
-        if (previewId) document.getElementById(previewId).innerHTML = '❌ 讀取失敗，請確認連結已公開且為圖片直連（建議 PNG/JPG/GIF）。';
-      };
-      img.onload = () => {
-        if (previewId) document.getElementById(previewId).innerHTML = '✅ 可讀取（已套用）';
-      };
-      img.src = normalized || placeholder;
-      if (previewId && normalized) {
-        document.getElementById(previewId).innerHTML = '測試中…';
-      }
-    }
-
-    function applyPhotos() {
-      const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
-      setImgSrc('prof-photo', cfg.photo_prof, 'https://placehold.co/200x200?text=Prof');
-      setImgSrc('m2-he-photo', cfg.photo_m2_he, 'https://placehold.co/200x200?text=HJ');
-      setImgSrc('m2-chen-photo', cfg.photo_m2_chen, 'https://placehold.co/200x200?text=CT');
-      setImgSrc('m2-tu-photo', cfg.photo_m2_tu, 'https://placehold.co/200x200?text=TYZ');
-      setImgSrc('m1-shih-photo', cfg.photo_m1_shih, 'https://placehold.co/200x200?text=SBY');
-    }');
-      document.getElementById('prof-photo').src = cfg.photo_prof || 'https://placehold.co/200x200?text=Prof';
-      document.getElementById('m2-he-photo').src = cfg.photo_m2_he || 'https://placehold.co/200x200?text=HJ';
-      document.getElementById('m2-chen-photo').src = cfg.photo_m2_chen || 'https://placehold.co/200x200?text=CT';
-      document.getElementById('m2-tu-photo').src = cfg.photo_m2_tu || 'https://placehold.co/200x200?text=TYZ';
-      document.getElementById('m1-shih-photo').src = cfg.photo_m1_shih || 'https://placehold.co/200x200?text=SBY';
-    }
+  document.getElementById('save-settings')?.addEventListener('click', () => {
+    const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
+    cfg.api = document.getElementById('api-key').value || cfg.api || '';
+    cfg.scholar = document.getElementById('scholar-id').value.trim();
+    cfg.orcid = document.getElementById('orcid-id').value.trim();
+    cfg.nstc_pi = document.getElementById('nstc-pi').value.trim();
+    cfg.photo_prof = document.getElementById('photo-prof').value.trim();
+    cfg.photo_m2_he = document.getElementById('photo-m2-he').value.trim();
+    cfg.photo_m2_chen = document.getElementById('photo-m2-chen').value.trim();
+    cfg.photo_m2_tu = document.getElementById('photo-m2-tu').value.trim();
+    cfg.photo_m1_shih = document.getElementById('photo-m1-shih').value.trim();
+    localStorage.setItem('nric_cfg', JSON.stringify(cfg));
+    settingsModal.classList.add('hidden');
     applyPhotos();
-
-    // Ideation panel (UI only)
-    document.getElementById('btn-api')?.addEventListener('click', () => loadSettings(true));
-    document.getElementById('btn-generate')?.addEventListener('click', () => {
-      const topic = document.getElementById('topic').value;
-      const context = document.getElementById('context').value.trim();
-      const notes = document.getElementById('notes').value.trim();
-      const sample = [
-        `[${topic}] MSN/SFN 蒙地卡羅 + 線性規劃：估計瓶頸流量與可靠度界限`,
-        `[${topic}] DNN 代理模型加速在 ${context || '製造現場'} 的敏感度分析`,
-        `[${topic}] 在 ${context || '雲/邊緣環境'} 進行成本—可靠度權衡之整數規劃（約束：${notes ? '依你輸入' : '資源/時程'}）`
-      ];
-      const result = document.getElementById('result');
-      if (result) result.innerHTML = `<ul class="list-disc list-inside"><li>${sample.join('</li><li>')}</li></ul>`;
-    });
-    document.getElementById('btn-brief')?.addEventListener('click', () => {
-      const result = document.getElementById('result');
-      if (result) result.innerHTML = '<p>（示意）簡報大綱：動機 → 研究問題 → 方法（SFN + LP/MC 或 DNN）→ 實驗設計 → 期望貢獻。</p>';
-    });
-
-    // ------ Publications Auto-Import ------
-    async function fetchPublications() {
-      const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
-      const scholar = cfg.scholar || '';
-      const orcid = cfg.orcid || '';
-      if (!scholar && !orcid) return; // nothing to fetch
-      try {
-        const resp = await fetch(`/api/pubs?${new URLSearchParams({ scholar, orcid })}`);
-        if (!resp.ok) throw new Error('fetch failed');
-        const items = await resp.json();
-        const list = document.getElementById('pub-list');
-        if (!list) return;
-        list.innerHTML = '';
-        (items || []).slice(0, 8).forEach(p => {
-          const li = document.createElement('li');
-          const j = p.journal ? `<strong>${p.journal}</strong>` : '';
-          li.innerHTML = `${p.authors ? p.authors + '. ' : ''}<em>${p.title || ''}</em>. ${j}${p.year ? ', ' + p.year : ''}.`;
-          list.appendChild(li);
-        });
-      } catch (e) { console.warn('Publications fetch error', e); }
-    }
-
-    // ------ NSTC Projects Auto-Import ------
-    async function fetchNSTC() {
-      const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
-      const pi = (cfg.nstc_pi || '').trim();
-      if (!pi) return; // nothing to fetch
-      try {
-        // 後端建議：GET /api/nstc?pi=<中文姓名或ID>
-        // 回傳格式：[{ title, id, year, code }]
-        const resp = await fetch(`/api/nstc?${new URLSearchParams({ pi })}`);
-        if (!resp.ok) throw new Error('fetch failed');
-        const items = await resp.json();
-        const ul = document.getElementById('nstc-list');
-        if (!ul) return;
-        ul.innerHTML = '';
-        (items || []).slice(0, 6).forEach(x => {
-          const li = document.createElement('li');
-          li.innerHTML = `${x.year ? '['+x.year+'] ' : ''}${x.title || ''}${x.code ? '（' + x.code + '）' : ''}`;
-          ul.appendChild(li);
-        });
-        if (!items || !items.length) ul.innerHTML = '<li class="text-gray-500">查無資料</li>';
-      } catch (e) { console.warn('NSTC fetch error', e); }
-    }
-
-    // initial pull if configured
     fetchPublications();
     fetchNSTC();
+  });
 
-    // ------ Hamburger Menu Controls (with iOS safe area + scroll lock) ------
-    const hamburgerBtn = document.getElementById('hamburger-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const mobileMenuCloseBtn = document.getElementById('mobile-menu-close-btn');
-    const mobileMenuLinks = mobileMenu?.querySelectorAll('a') || [];
+  document.getElementById('clear-settings')?.addEventListener('click', () => {
+    localStorage.removeItem('nric_cfg');
+    applyPhotos();
+  });
 
-    function openMenu() {
-      mobileMenu.classList.remove('hidden');
-      document.documentElement.classList.add('menu-open');
-      document.body.classList.add('menu-open');
-    }
-    function closeMenu() {
-      mobileMenu.classList.add('hidden');
-      document.documentElement.classList.remove('menu-open');
-      document.body.classList.remove('menu-open');
-    }
-    hamburgerBtn?.addEventListener('click', openMenu);
-    mobileMenuCloseBtn?.addEventListener('click', closeMenu);
-    mobileMenuLinks.forEach(link => link.addEventListener('click', closeMenu));
-    mobileMenu?.addEventListener('click', (e) => { if (e.target === mobileMenu) closeMenu(); });
-  </script>
+  // URL normalizer for common hosts
+  function normalizeURL(u) {
+    if (!u) return '';
+    let url = u.trim();
+    if (url.startsWith('http://')) url = url.replace('http://', 'https://');
+    const g = url.match(/https?:\/\/drive\.google\.com\/file\/d\/([^/]+)/);
+    if (g) return `https://drive.google.com/uc?export=view&id=${g[1]}`;
+    if (url.includes('dropbox.com') && url.includes('?dl=0')) url = url.replace('?dl=0','?raw=1');
+    if (url.includes('github.com') && url.includes('/blob/')) url = url.replace('github.com','raw.githubusercontent.com').replace('/blob/','/');
+    return url;
+  }
+
+  function setImgSrc(id, url, placeholder, previewId) {
+    const img = document.getElementById(id);
+    const normalized = normalizeURL(url);
+    if (!img) return;
+    img.onerror = () => {
+      img.src = placeholder;
+      if (previewId) document.getElementById(previewId).innerHTML = '❌ 讀取失敗，請確認連結已公開且為圖片直連（建議 PNG/JPG/GIF）。';
+    };
+    img.onload = () => { if (previewId) document.getElementById(previewId).innerHTML = '✅ 可讀取（已套用）'; };
+    img.src = normalized || placeholder;
+    if (previewId && normalized) document.getElementById(previewId).innerHTML = '測試中…';
+  }
+
+  function applyPhotos() {
+    const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
+    setImgSrc('prof-photo', cfg.photo_prof, 'https://placehold.co/200x200?text=Prof');
+    setImgSrc('m2-he-photo', cfg.photo_m2_he, 'https://placehold.co/200x200?text=HJ');
+    setImgSrc('m2-chen-photo', cfg.photo_m2_chen, 'https://placehold.co/200x200?text=CT');
+    setImgSrc('m2-tu-photo', cfg.photo_m2_tu, 'https://placehold.co/200x200?text=TYZ');
+    setImgSrc('m1-shih-photo', cfg.photo_m1_shih, 'https://placehold.co/200x200?text=SBY');
+  }
+  applyPhotos();
+
+  // Inline testers for photo URLs (in Settings)
+  document.querySelectorAll('.test-link').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const forId = btn.getAttribute('data-test-for');
+      const input = document.getElementById(forId);
+      const preview = document.getElementById('preview-' + forId);
+      const url = normalizeURL(input.value);
+      if (!input.value) { preview.innerHTML = '請先貼上 URL'; return; }
+      const testImg = new Image();
+      preview.innerHTML = '測試中…';
+      testImg.onload = () => { preview.innerHTML = '✅ 可讀取（儲存後會套用到頁面）'; };
+      testImg.onerror = () => { preview.innerHTML = '❌ 讀取失敗：可能為私有連結、需要登入、或被禁止熱鏈。試試 Google Drive 直連／Dropbox raw／GitHub raw。'; };
+      testImg.src = url;
+    });
+  });
+
+  // Ideation panel (UI only)
+  document.getElementById('btn-api')?.addEventListener('click', () => loadSettings(true));
+  document.getElementById('btn-generate')?.addEventListener('click', () => {
+    const topic = document.getElementById('topic').value;
+    const context = document.getElementById('context').value.trim();
+    const notes = document.getElementById('notes').value.trim();
+    const sample = [
+      `[${topic}] MSN/SFN 蒙地卡羅 + 線性規劃：估計瓶頸流量與可靠度界限`,
+      `[${topic}] DNN 代理模型加速在 ${context || '製造現場'} 的敏感度分析`,
+      `[${topic}] 在 ${context || '雲/邊緣環境'} 進行成本—可靠度權衡之整數規劃（約束：${notes ? '依你輸入' : '資源/時程'}）`
+    ];
+    const result = document.getElementById('result');
+    if (result) result.innerHTML = `<ul class="list-disc list-inside"><li>${sample.join('</li><li>')}</li></ul>`;
+  });
+  document.getElementById('btn-brief')?.addEventListener('click', () => {
+    const result = document.getElementById('result');
+    if (result) result.innerHTML = '<p>（示意）簡報大綱：動機 → 研究問題 → 方法（SFN + LP/MC 或 DNN）→ 實驗設計 → 期望貢獻。</p>';
+  });
+
+  // ------ Publications Auto-Import ------
+  async function fetchPublications() {
+    const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
+    const scholar = cfg.scholar || '';
+    const orcid = cfg.orcid || '';
+    if (!scholar && !orcid) return;
+    try {
+      const resp = await fetch(`/api/pubs?${new URLSearchParams({ scholar, orcid })}`);
+      if (!resp.ok) throw new Error('fetch failed');
+      const items = await resp.json();
+      const list = document.getElementById('pub-list');
+      if (!list) return;
+      list.innerHTML = '';
+      (items || []).slice(0, 8).forEach(p => {
+        const li = document.createElement('li');
+        const j = p.journal ? `<strong>${p.journal}</strong>` : '';
+        li.innerHTML = `${p.authors ? p.authors + '. ' : ''}<em>${p.title || ''}</em>. ${j}${p.year ? ', ' + p.year : ''}.`;
+        list.appendChild(li);
+      });
+    } catch (e) { console.warn('Publications fetch error', e); }
+  }
+
+  // ------ NSTC Projects Auto-Import ------
+  async function fetchNSTC() {
+    const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
+    const pi = (cfg.nstc_pi || '').trim();
+    if (!pi) return;
+    try {
+      const resp = await fetch(`/api/nstc?${new URLSearchParams({ pi })}`);
+      if (!resp.ok) throw new Error('fetch failed');
+      const items = await resp.json();
+      const ul = document.getElementById('nstc-list');
+      if (!ul) return;
+      ul.innerHTML = '';
+      (items || []).slice(0, 6).forEach(x => {
+        const li = document.createElement('li');
+        li.innerHTML = `${x.year ? '['+x.year+'] ' : ''}${x.title || ''}${x.code ? '（' + x.code + '）' : ''}`;
+        ul.appendChild(li);
+      });
+      if (!items || !items.length) ul.innerHTML = '<li class="text-gray-500">查無資料</li>';
+    } catch (e) { console.warn('NSTC fetch error', e); }
+  }
+
+  // initial pull if configured
+  fetchPublications();
+  fetchNSTC();
+
+  // ------ Hamburger Menu Controls (with iOS safe area + scroll lock) ------
+  const hamburgerBtn = document.getElementById('hamburger-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const mobileMenuCloseBtn = document.getElementById('mobile-menu-close-btn');
+  const mobileMenuLinks = mobileMenu?.querySelectorAll('a') || [];
+
+  function openMenu() {
+    mobileMenu.classList.remove('hidden');
+    document.documentElement.classList.add('menu-open');
+    document.body.classList.add('menu-open');
+  }
+  function closeMenu() {
+    mobileMenu.classList.add('hidden');
+    document.documentElement.classList.remove('menu-open');
+    document.body.classList.remove('menu-open');
+  }
+  hamburgerBtn?.addEventListener('click', openMenu);
+  mobileMenuCloseBtn?.addEventListener('click', closeMenu);
+  mobileMenuLinks.forEach(link => link.addEventListener('click', closeMenu));
+  mobileMenu?.addEventListener('click', (e) => { if (e.target === mobileMenu) closeMenu(); });
+})();
+</script>
 </body>
 </html>
