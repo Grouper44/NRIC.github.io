@@ -1,1 +1,1 @@
-# THU_NRIC_Website
+#NRIC.github.io
