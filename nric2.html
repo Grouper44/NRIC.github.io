@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>網路可靠度實驗室 (Network Reliability Lab)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .shadow-soft {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+        }
+
+        .hidden-route {
+            display: none;
+        }
+
+        .card-hero {
+            background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="https://placehold.co/40x40?text=NR" alt="Lab" class="w-10 h-10 rounded-xl shadow" />
+                <div>
+                    <h1 class="text-2xl font-bold text-blue-800">網路可靠度實驗室</h1>
+                    <p class="text-xs text-gray-600">東海大學 IEEM｜Network Reliability Lab</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex items-center gap-6 text-sm">
+                <a href="#home" class="hover:text-blue-700">首頁</a>
+                <a href="#lab" class="hover:text-blue-700">設備／探索</a>
+                <a href="#news" class="hover:text-blue-700">最新公告</a>
+                <a href="#contact" class="hover:text-blue-700">聯絡</a>
+            </nav>
+            <button id="open-settings"
+                class="hidden md:inline-flex border px-3 py-2 rounded-md hover:bg-gray-50">設定</button>
+        </div>
+    </header>
+
+    <!-- === Home (route) === -->
+    <main id="route-home">
+        <!-- About -->
+        <section id="about" class="container mx-auto px-6 py-10">
+            <h2 class="text-2xl font-bold border-l-4 border-blue-600 pl-4 mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" fill="currentColor"
+                    viewBox="0 0 24 24">
+                    <path d="M12 2L2 7h20L12 2zm0 20l10-5V9L12 14L2 9v8l10 5z" />
+                </svg>
+                關於我們
+            </h2>
+            <div class="bg-white p-6 rounded-lg shadow-soft space-y-5 text-base leading-relaxed">
+                <p>本實驗室專注於<strong class="text-blue-700">網路可靠度</strong>、<strong
+                        class="text-blue-700">智慧製造</strong>、<strong class="text-blue-700">最佳化</strong>與<strong
+                        class="text-blue-700">機器學習</strong>。我們在大型與多階狀態網路（MSN）與隨機流量網路（SFN）上發展模型與演算法，將理論落地到製造與雲邊緣服務。</p>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="border rounded-lg p-4">
+                        <h3 class="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-700" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M7 7h10v2H7zm0 4h10v2H7zm0 4h10v2H7z" />
+                            </svg>
+                            方法論
+                        </h3>
+                        <ul class="list-disc list-inside text-gray-700 text-sm space-y-1">
+                            <li>蒙地卡羅／重要抽樣</li>
+                            <li>LP／MIP、圖論（路徑／切割集）</li>
+                            <li>DNN 代理模型、時序與圖建模</li>
+                        </ul>
+                    </div>
+                    <div class="border rounded-lg p-4">
+                        <h3 class="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-700" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M12 2a3 3 0 0 1 3 3v1h2a2 2 0 0 1 2 2v1h1a2 2 0 0 1 0 4h-1v1a2 2 0 0 1-2 2h-2v1a3 3 0 1 1-6 0v-1H7a2 2 0 0 1-2-2v-1H4a2 2 0 0 1 0-4h1V8a2 2 0 0 1 2-2h2V5a3 3 0 0 1 3-3Z" />
+                            </svg>
+                            特色
+                        </h3>
+                        <ul class="list-disc list-inside text-gray-700 text-sm space-y-1">
+                            <li>模型→驗證→情境→決策之全鏈整合</li>
+                            <li>與製造現場／雲邊緣流程協同</li>
+                            <li>可重現工具鏈（Docker、PyTorch、OR-Tools）</li>
+                        </ul>
+                    </div>
+                    <div class="border rounded-lg p-4">
+                        <h3 class="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-700" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M3 12h18v2H3zm0 4h12v2H3zM3 8h18v2H3z" />
+                            </svg>
+                            應用
+                        </h3>
+                        <ul class="list-disc list-inside text-gray-700 text-sm space-y-1">
+                            <li>產線停機風險與維護排程</li>
+                            <li>雲／邊緣服務可靠度預測</li>
+                            <li>供應鏈永續決策與碳排估算</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Members -->
+        <section id="members" class="container mx-auto px-6 pb-10">
+            <h2 class="text-2xl font-bold border-l-4 border-blue-600 pl-4 mb-6 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" fill="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+                實驗室成員
+            </h2>
+
+            <!-- 指導教授（與研究生同框架大小） -->
+            <div class="bg-white rounded-2xl shadow-soft p-6 mb-6">
+                <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-700" viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zM4.8 21.6c0-2.4 4.8-3.6 7.2-3.6s7.2 1.2 7.2 3.6V24H4.8v-2.4z" />
+                    </svg>
+                    指導教授
+                </h3>
+                <div class="grid sm:grid-cols-1 md:grid-cols-1 gap-5">
+                    <div class="rounded-xl border p-4 flex items-center gap-4">
+                        <img id="prof-photo" src="https://placehold.co/900x600?text=Prof" alt="黃鼎翔"
+                            class="w-96 h-60 object-cover rounded-lg border" />
+                        <div>
+                            <p class="font-semibold text-lg">黃鼎翔 副教授</p>
+                            <p class="text-sm text-gray-600">國立陽明交通大學 工業工程與管理學系 博士</p>
+                            <button id="open-modal-btn"
+                                class="mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-md text-sm">查看詳情</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 研究生 -->
+            <div class="bg-white rounded-2xl shadow-soft p-6">
+                <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-700" viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zM8 11c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.67 0-8 1.34-8 4v3h8v-3c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v3h8v-3c0-2.66-5.33-4-8-4H8z" />
+                    </svg>
+                    研究生
+                </h3>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="rounded-xl border p-3 text-center">
+                        <img id="m2-he-photo" src="https://placehold.co/200x200?text=HJ" alt="何杰廷"
+                            class="w-full h-40 object-cover rounded-lg mb-2" />
+                        <p class="font-semibold text-sm">何杰廷</p>
+                        <p class="text-xs text-gray-600">碩二｜研究主題：—</p>
+                    </div>
+                    <div class="rounded-xl border p-3 text-center">
+                        <img id="m2-chen-photo" src="https://placehold.co/200x200?text=CT" alt="陳婷"
+                            class="w-full h-40 object-cover rounded-lg mb-2" />
+                        <p class="font-semibold text-sm">陳婷</p>
+                        <p class="text-xs text-gray-600">碩二｜研究主題：—</p>
+                    </div>
+                    <div class="rounded-xl border p-3 text-center">
+                        <img id="m2-tu-photo" src="https://placehold.co/200x200?text=TYZ" alt="涂云禎"
+                            class="w-full h-40 object-cover rounded-lg mb-2" />
+                        <p class="font-semibold text-sm">涂云禎</p>
+                        <p class="text-xs text-gray-600">碩二｜研究主題：—</p>
+                    </div>
+                    <div class="rounded-xl border p-3 text-center">
+                        <img id="m1-shih-photo" src="https://placehold.co/200x200?text=SBY" alt="施柏宇"
+                            class="w-full h-40 object-cover rounded-lg mb-2" />
+                        <p class="font-semibold text-sm">施柏宇</p>
+                        <p class="text-xs text-gray-600">碩一｜研究主題：—</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact (home only) -->
+        <section id="contact" class="container mx-auto px-6 py-16">
+            <h2 class="text-2xl font-bold border-l-4 border-blue-600 pl-4 mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" fill="currentColor"
+                    viewBox="0 0 24 24">
+                    <path d="M2 5h20v14H2z" />
+                </svg>
+                聯絡我們
+            </h2>
+            <div class="bg-white rounded-2xl shadow-soft p-6 grid md:grid-cols-2 gap-6">
+                <div>
+                    <p class="text-sm text-gray-700">地址：407224 台中市西屯區台灣大道四段 1727 號｜東海大學 工學院 IEEM</p>
+                    <p class="text-sm text-gray-700 mt-1">Email：<a href="mailto:lab@example.edu.tw"
+                            class="text-blue-600 hover:underline">lab@example.edu.tw</a></p>
+                    <p class="text-sm text-gray-500 mt-2">（以上為示意，可替換為實際聯絡方式）</p>
+                </div>
+                <form class="space-y-3">
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">您的姓名</label>
+                        <input type="text"
+                            class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+                            placeholder="王小明" />
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">聯絡信箱</label>
+                        <input type="email"
+                            class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+                            placeholder="you@example.com" />
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">訊息</label>
+                        <textarea rows="3"
+                            class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+                            placeholder="想合作、參與或洽詢..."></textarea>
+                    </div>
+                    <button type="button"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">送出（示意）</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- === Lab (Equipment + Ideation) route === -->
+    <section id="route-lab" class="hidden-route container mx-auto px-6 py-10">
+        <h2 class="text-2xl font-bold border-l-4 border-blue-600 pl-4 mb-6">設備與研究探索</h2>
+        <!-- Equipment cards -->
+        <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-2xl shadow-soft p-7">
+                <div class="flex items-center gap-3 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-blue-700" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M7 3h10v2H7zm0 16h10v2H7zM3 7h2v10H3zm16 0h2v10h-2z" />
+                    </svg>
+                    <h3 class="text-lg font-semibold text-blue-800">一般設備</h3>
+                </div>
+                <ul class="list-disc list-inside text-base text-gray-700 space-y-1">
+                    <li>膠囊咖啡機 × 1</li>
+                    <li>投影機 × 1</li>
+                    <li>印表機 × 1</li>
+                    <li>冷氣卡（NT$ 525）× 1</li>
+                </ul>
+            </div>
+            <div class="bg-white rounded-2xl shadow-soft p-7">
+                <div class="flex items-center gap-3 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-blue-700" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M4 5h16v10H4zm0 12h16v2H4z" />
+                    </svg>
+                    <h3 class="text-lg font-semibold text-blue-800">運算與終端</h3>
+                </div>
+                <ul class="list-disc list-inside text-base text-gray-700 space-y-1">
+                    <li>Windows 筆記型電腦（實驗室）× 1</li>
+                    <li>Windows 筆電（自備）× 3</li>
+                    <li>MacBook（自備）× 2</li>
+                </ul>
+            </div>
+            <div class="bg-white rounded-2xl shadow-soft p-7">
+                <div class="flex items-center gap-3 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-blue-700" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M3 4h18v12H3zm7 14h4v2h-4z" />
+                    </svg>
+                    <h3 class="text-lg font-semibold text-blue-800">顯示器</h3>
+                </div>
+                <ul class="list-disc list-inside text-base text-gray-700 space-y-1">
+                    <li>MP251 E2 25 型 螢幕 × 4</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ideation UI -->
+        <div class="rounded-2xl overflow-hidden shadow-soft">
+            <div class="card-hero text-white px-6 py-6">
+                <h3 class="text-xl font-semibold">研究方向探索</h3>
+                <p class="text-blue-100 mt-1">輸入條件 → 產生研究主題點子或實驗設計大綱（前端介面，後端由你接 API）。</p>
+            </div>
+            <div class="bg-white p-6 grid lg:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">主題範疇</label>
+                            <select id="topic"
+                                class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200">
+                                <option value="reliability">網路可靠度</option>
+                                <option value="smart-manufacturing">智慧製造</option>
+                                <option value="optimization">最佳化</option>
+                                <option value="ml">機器學習</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">應用情境（可選）</label>
+                            <input id="context" type="text"
+                                class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+                                placeholder="供應鏈碳排、邊緣雲可靠度、產線停機…" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">想探索的方向或限制敘述</label>
+                        <textarea id="notes" rows="7"
+                            class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+                            placeholder="資料型態、方法、限制（如資料量、時程）等"></textarea>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button id="btn-generate"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">產生主題點子</button>
+                        <button id="btn-brief"
+                            class="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded-md">生成簡報式簡介</button>
+                        <button id="btn-api" class="border px-3 py-2 rounded-md hover:bg-gray-50">設定 API／學術資料來源</button>
+                        <span class="text-xs text-gray-500">（此區僅 UI，請於設定中填入 API 或由後端代理）</span>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">結果</h4>
+                    <div id="result" class="min-h-[220px] border rounded-md p-4 text-sm text-gray-700 bg-gray-50">
+                        （點擊「產生」後在此顯示結果——目前為示意）</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === News (route) === -->
+    <section id="route-news" class="hidden-route container mx-auto px-6 py-10">
+        <h2 class="text-2xl font-bold border-l-4 border-blue-600 pl-4 mb-6">最新公告</h2>
+        <div class="space-y-4">
+            <article class="bg-white rounded-2xl shadow-soft p-6">
+                <div class="text-sm text-gray-500">2025-06-12</div>
+                <h3 class="text-lg font-semibold mt-1">113-2 期末聚餐＋迎新</h3>
+                <p class="text-sm text-gray-700 mt-2">期末一起聚餐並歡迎新加入的成員；地點與時間將於一週前公告，敬請留意信箱與群組通知。</p>
+            </article>
+            <article class="bg-white rounded-2xl shadow-soft p-6">
+                <div class="text-sm text-gray-500">2025-03-06</div>
+                <h3 class="text-lg font-semibold mt-1">113-2 期初聚餐</h3>
+                <p class="text-sm text-gray-700 mt-2">新學期見面聊研究規劃與分工，餐敘名單請至表單回覆是否出席。</p>
+            </article>
+        </div>
+        <div class="mt-6">
+            <a href="#home" class="text-blue-600 hover:underline">← 回首頁</a>
+        </div>
+    </section>
+
+    <!-- Professor Modal with pubs + NSTC -->
+    <div id="professor-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div id="modal-content"
+            class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 relative">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+                aria-label="關閉視窗">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h2 class="text-2xl font-bold text-blue-800 mb-4">黃鼎翔 副教授</h2>
+            <div class="space-y-4 text-gray-700">
+                <div>
+                    <h3 class="font-semibold text-lg border-b pb-1 mb-2">學歷</h3>
+                    <ul class="list-disc list-inside">
+                        <li>國立陽明交通大學 工業工程與管理學系 博士</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg border-b pb-1 mb-2">研究領域</h3>
+                    <div class="flex flex-wrap gap-2 text-sm">
+                        <span class="bg-blue-100 text-blue-800 font-medium px-2.5 py-0.5 rounded">網路可靠度</span>
+                        <span class="bg-blue-100 text-blue-800 font-medium px-2.5 py-0.5 rounded">智慧製造</span>
+                        <span class="bg-blue-100 text-blue-800 font-medium px-2.5 py-0.5 rounded">最佳化</span>
+                        <span class="bg-blue-100 text-blue-800 font-medium px-2.5 py-0.5 rounded">機器學習</span>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg border-b pb-1 mb-2">近期著作（Selected）</h3>
+                    <ul id="pub-list" class="list-decimal list-inside space-y-2 text-sm leading-relaxed">
+                        <li>（預設）Reliability Engineering & System Safety, 2025.</li>
+                        <li>（預設）Reliability Engineering & System Safety, 2024.</li>
+                        <li>（預設）Reliability Engineering & System Safety, 2024.</li>
+                        <li>（預設）Annals of Operations Research, 2024.</li>
+                    </ul>
+                    <div class="mt-4">
+                        <h4 class="font-semibold text-base mb-1">國科會計畫（自動匯入）</h4>
+                        <ul id="nstc-list" class="list-disc list-inside text-sm text-gray-700 space-y-1">
+                            <li class="text-gray-500">（尚未設定或載入）</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black/50 z-50 hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-3xl mx-auto my-8 p-6 overflow-y-auto max-h-[90vh]">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-semibold">網站設定</h3>
+                <button id="close-settings" class="border rounded-md px-3 py-1 hover:bg-gray-50">關閉</button>
+            </div>
+            <div class="grid lg:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <h4 class="font-semibold">API／學術資料</h4>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">OpenAI（或其他）API Key</label>
+                        <input id="api-key" type="password" class="w-full border rounded-md px-3 py-2"
+                            placeholder="sk-..." />
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">Google Scholar userId</label>
+                        <input id="scholar-id" type="text" class="w-full border rounded-md px-3 py-2"
+                            placeholder="例如：4bahYMkAAAAJ" />
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">ORCID iD</label>
+                        <input id="orcid-id" type="text" class="w-full border rounded-md px-3 py-2"
+                            placeholder="0000-0000-0000-0000" />
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">國科會查詢關鍵字（PI 名稱）</label>
+                        <input id="nstc-pi" type="text" class="w-full border rounded-md px-3 py-2"
+                            placeholder="例如：黃鼎翔" />
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="save-settings"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">儲存</button>
+                        <button id="clear-settings" class="border px-3 py-2 rounded-md hover:bg-gray-50">清除</button>
+                    </div>
+                    <p class="text-xs text-gray-500">建議：由你的後端以 proxy 抓取 Scholar／ORCID／NSTC，以避免 CORS 與風控。</p>
+                </div>
+                <div class="space-y-4">
+                    <h4 class="font-semibold">照片 URLs（可放置伺服器或雲端）</h4>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">教授照片 URL</label>
+                        <input id="photo-prof" type="url" class="w-full border rounded-md px-3 py-2"
+                            placeholder="https://.../prof.jpg" />
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">何杰廷</label>
+                            <input id="photo-m2-he" type="url" class="w-full border rounded-md px-3 py-2"
+                                placeholder="https://.../he.jpg" />
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">陳婷</label>
+                            <input id="photo-m2-chen" type="url" class="w-full border rounded-md px-3 py-2"
+                                placeholder="https://.../chen.jpg" />
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">涂云禎</label>
+                            <input id="photo-m2-tu" type="url" class="w-full border rounded-md px-3 py-2"
+                                placeholder="https://.../tu.jpg" />
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">施柏宇</label>
+                            <input id="photo-m1-shih" type="url" class="w-full border rounded-md px-3 py-2"
+                                placeholder="https://.../shih.jpg" />
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500">儲存後立即套用到頁面卡片，預設為佔位圖。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t">
+        <div
+            class="container mx-auto px-6 py-6 text-sm text-gray-500 flex flex-col md:flex-row items-center justify-between">
+            <p>© <span id="y"></span> Network Reliability Lab, THU IEEM</p>
+            <a href="#home" class="mt-2 md:mt-0 hover:text-blue-700">回到頂部 ↑</a>
+        </div>
+    </footer>
+
+    <script>
+        // ------ Simple SPA routing (#home, #lab, #news); #contact scrolls within #home
+        function route() {
+            const raw = location.hash || '#home';
+            const hash = raw === '#contact' ? '#home' : raw;
+            const showHome = hash === '#home' || hash === '';
+            document.getElementById('route-home').style.display = showHome ? 'block' : 'none';
+            document.getElementById('route-lab').style.display = hash === '#lab' ? 'block' : 'none';
+            document.getElementById('route-news').style.display = hash === '#news' ? 'block' : 'none';
+            if (raw === '#contact') {
+                setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 0);
+            }
+        }
+        window.addEventListener('hashchange', route);
+        route();
+
+        // Professor modal controls
+        const modal = document.getElementById('professor-modal');
+        document.addEventListener('click', (e) => {
+            if (e.target && (e.target.id === 'open-modal-btn')) {
+                modal.classList.remove('hidden');
+            }
+            if (e.target && (e.target.id === 'close-modal-btn' || e.target === modal)) {
+                modal.classList.add('hidden');
+            }
+        });
+
+        // Footer year
+        document.getElementById('y').textContent = new Date().getFullYear();
+
+        // Settings modal
+        const openSettings = document.getElementById('open-settings');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeSettings = document.getElementById('close-settings');
+        openSettings?.addEventListener('click', () => loadSettings(true));
+        closeSettings?.addEventListener('click', () => settingsModal.classList.add('hidden'));
+
+        function loadSettings(open) {
+            const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
+            document.getElementById('api-key').value = '';
+            document.getElementById('scholar-id').value = cfg.scholar || '';
+            document.getElementById('orcid-id').value = cfg.orcid || '';
+            document.getElementById('nstc-pi').value = cfg.nstc_pi || '';
+            document.getElementById('photo-prof').value = cfg.photo_prof || '';
+            document.getElementById('photo-m2-he').value = cfg.photo_m2_he || '';
+            document.getElementById('photo-m2-chen').value = cfg.photo_m2_chen || '';
+            document.getElementById('photo-m2-tu').value = cfg.photo_m2_tu || '';
+            document.getElementById('photo-m1-shih').value = cfg.photo_m1_shih || '';
+            if (open) settingsModal.classList.remove('hidden');
+        }
+
+        document.getElementById('save-settings')?.addEventListener('click', () => {
+            const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
+            cfg.api = document.getElementById('api-key').value || cfg.api || '';
+            cfg.scholar = document.getElementById('scholar-id').value.trim();
+            cfg.orcid = document.getElementById('orcid-id').value.trim();
+            cfg.nstc_pi = document.getElementById('nstc-pi').value.trim();
+            cfg.photo_prof = document.getElementById('photo-prof').value.trim();
+            cfg.photo_m2_he = document.getElementById('photo-m2-he').value.trim();
+            cfg.photo_m2_chen = document.getElementById('photo-m2-chen').value.trim();
+            cfg.photo_m2_tu = document.getElementById('photo-m2-tu').value.trim();
+            cfg.photo_m1_shih = document.getElementById('photo-m1-shih').value.trim();
+            localStorage.setItem('nric_cfg', JSON.stringify(cfg));
+            settingsModal.classList.add('hidden');
+            applyPhotos();
+            fetchPublications();
+            fetchNSTC();
+        });
+
+        document.getElementById('clear-settings')?.addEventListener('click', () => {
+            localStorage.removeItem('nric_cfg');
+            applyPhotos();
+        });
+
+        function applyPhotos() {
+            const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
+            document.getElementById('prof-photo').src = cfg.photo_prof || 'https://placehold.co/200x200?text=Prof';
+            document.getElementById('m2-he-photo').src = cfg.photo_m2_he || 'https://placehold.co/200x200?text=HJ';
+            document.getElementById('m2-chen-photo').src = cfg.photo_m2_chen || 'https://placehold.co/200x200?text=CT';
+            document.getElementById('m2-tu-photo').src = cfg.photo_m2_tu || 'https://placehold.co/200x200?text=TYZ';
+            document.getElementById('m1-shih-photo').src = cfg.photo_m1_shih || 'https://placehold.co/200x200?text=SBY';
+        }
+        applyPhotos();
+
+        // Ideation panel (UI only)
+        document.getElementById('btn-api')?.addEventListener('click', () => loadSettings(true));
+        document.getElementById('btn-generate')?.addEventListener('click', () => {
+            const topic = document.getElementById('topic').value;
+            const context = document.getElementById('context').value.trim();
+            const notes = document.getElementById('notes').value.trim();
+            const sample = [
+                `[${topic}] MSN/SFN 蒙地卡羅 + 線性規劃：估計瓶頸流量與可靠度界限`,
+                `[${topic}] DNN 代理模型加速在 ${context || '製造現場'} 的敏感度分析`,
+                `[${topic}] 在 ${context || '雲/邊緣環境'} 進行成本—可靠度權衡之整數規劃（約束：${notes ? '依你輸入' : '資源/時程'}）`
+            ];
+            const result = document.getElementById('result');
+            if (result) result.innerHTML = `<ul class="list-disc list-inside"><li>${sample.join('</li><li>')}</li></ul>`;
+        });
+        document.getElementById('btn-brief')?.addEventListener('click', () => {
+            const result = document.getElementById('result');
+            if (result) result.innerHTML = '<p>（示意）簡報大綱：動機 → 研究問題 → 方法（SFN + LP/MC 或 DNN）→ 實驗設計 → 期望貢獻。</p>';
+        });
+
+        // ------ Publications Auto-Import ------
+        async function fetchPublications() {
+            const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
+            const scholar = cfg.scholar || '';
+            const orcid = cfg.orcid || '';
+            if (!scholar && !orcid) return; // nothing to fetch
+            try {
+                const resp = await fetch(`/api/pubs?${new URLSearchParams({ scholar, orcid })}`);
+                if (!resp.ok) throw new Error('fetch failed');
+                const items = await resp.json();
+                const list = document.getElementById('pub-list');
+                if (!list) return;
+                list.innerHTML = '';
+                (items || []).slice(0, 8).forEach(p => {
+                    const li = document.createElement('li');
+                    const j = p.journal ? `<strong>${p.journal}</strong>` : '';
+                    li.innerHTML = `${p.authors ? p.authors + '. ' : ''}<em>${p.title || ''}</em>. ${j}${p.year ? ', ' + p.year : ''}.`;
+                    list.appendChild(li);
+                });
+            } catch (e) { console.warn('Publications fetch error', e); }
+        }
+
+        // ------ NSTC Projects Auto-Import ------
+        async function fetchNSTC() {
+            const cfg = JSON.parse(localStorage.getItem('nric_cfg') || '{}');
+            const pi = (cfg.nstc_pi || '').trim();
+            if (!pi) return; // nothing to fetch
+            try {
+                // 後端建議：GET /api/nstc?pi=<中文姓名或ID>
+                // 回傳格式：[{ title, id, year, code }]
+                const resp = await fetch(`/api/nstc?${new URLSearchParams({ pi })}`);
+                if (!resp.ok) throw new Error('fetch failed');
+                const items = await resp.json();
+                const ul = document.getElementById('nstc-list');
+                if (!ul) return;
+                ul.innerHTML = '';
+                (items || []).slice(0, 6).forEach(x => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `${x.year ? '[' + x.year + '] ' : ''}${x.title || ''}${x.code ? '（' + x.code + '）' : ''}`;
+                    ul.appendChild(li);
+                });
+                if (!items || !items.length) ul.innerHTML = '<li class="text-gray-500">查無資料</li>';
+            } catch (e) { console.warn('NSTC fetch error', e); }
+        }
+
+        // initial pull if configured
+        fetchPublications();
+        fetchNSTC();
+    </script>
+</body>
+
+</html>
