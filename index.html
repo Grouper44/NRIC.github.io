@@ -39,21 +39,25 @@
       </div>
     </div>
 
-    <!-- Mobile menu (safe-area + scroll lock) -->
-    <div id="mobile-menu" class="hidden fixed inset-0 z-[60] bg-gray-900/90 pt-[var(--safe-top)] pb-[var(--safe-bottom)]">
-      <button id="mobile-menu-close-btn" class="absolute right-4" style="top: calc(var(--safe-top) + 8px)" aria-label="關閉選單">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <nav class="min-h-full flex flex-col items-center justify-center gap-6 px-6 text-center">
+    </header>
+
+  <!-- Mobile menu (moved OUTSIDE header to avoid iOS backdrop/transform clipping) -->
+  <div id="mobile-menu" class="hidden fixed inset-0 z-[60] bg-gray-900/60 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] flex items-center justify-center opacity-0 transition-opacity duration-200">
+    <button id="mobile-menu-close-btn" class="absolute right-4" style="top: calc(env(safe-area-inset-top) + 8px)" aria-label="關閉選單">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    <!-- Centered menu panel -->
+    <div id="mobile-panel" class="bg-gray-800/95 backdrop-blur rounded-2xl shadow-2xl w-[min(92vw,520px)] max-w-[92vw] px-8 py-10 text-center opacity-0 translate-y-3 scale-95 transition-all duration-300">
+      <nav class="flex flex-col items-center gap-5">
         <a href="#home" class="text-white text-2xl leading-[1.15] tracking-wide hover:text-blue-300 transition-colors">首頁</a>
         <a href="#lab" class="text-white text-2xl leading-[1.15] tracking-wide hover:text-blue-300 transition-colors">設備／探索</a>
         <a href="#news" class="text-white text-2xl leading-[1.15] tracking-wide hover:text-blue-300 transition-colors">最新公告</a>
         <a href="#contact" class="text-white text-2xl leading-[1.15] tracking-wide hover:text-blue-300 transition-colors">聯絡</a>
       </nav>
     </div>
-  </header>
+  </div>
 
   <!-- === Home (route) === -->
   <main id="route-home">
@@ -614,16 +618,30 @@
   // ------ Hamburger Menu Controls (with iOS safe area + scroll lock) ------
   const hamburgerBtn = document.getElementById('hamburger-btn');
   const mobileMenu = document.getElementById('mobile-menu');
+  const mobilePanel = document.getElementById('mobile-panel');
   const mobileMenuCloseBtn = document.getElementById('mobile-menu-close-btn');
   const mobileMenuLinks = mobileMenu?.querySelectorAll('a') || [];
 
   function openMenu() {
     mobileMenu.classList.remove('hidden');
+    // force reflow for transition
+    void mobileMenu.offsetWidth;
+    mobileMenu.classList.add('opacity-100');
+    mobilePanel.classList.remove('opacity-0','translate-y-3','scale-95');
+    mobilePanel.classList.add('opacity-100','translate-y-0','scale-100');
     document.documentElement.classList.add('menu-open');
     document.body.classList.add('menu-open');
   }
   function closeMenu() {
-    mobileMenu.classList.add('hidden');
+    // reverse animations
+    mobileMenu.classList.remove('opacity-100');
+    mobilePanel.classList.remove('opacity-100','translate-y-0','scale-100');
+    mobilePanel.classList.add('opacity-0','translate-y-3','scale-95');
+    const onFadeEnd = () => {
+      mobileMenu.classList.add('hidden');
+      mobileMenu.removeEventListener('transitionend', onFadeEnd);
+    };
+    mobileMenu.addEventListener('transitionend', onFadeEnd);
     document.documentElement.classList.remove('menu-open');
     document.body.classList.remove('menu-open');
   }
